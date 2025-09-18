@@ -1,0 +1,16 @@
+﻿# Node
+node_modules/
+npm-debug.log*
+
+# Entornos (no subir secretos)
+.env
+.env.qa
+.env.prod
+
+# Docker (archivos locales opcionales)
+*.local
+*.tmp
+
+# SO
+.DS_Store
+Thumbs.db

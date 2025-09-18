@@ -1,0 +1,64 @@
+services:
+  db_qa:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: appdb_qa
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"          # opcional: para conectar con DBeaver/IDE
+    volumes:
+      - db_qa_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d appdb_qa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db_prod:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: appdb_prod
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d appdb_prod"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app_qa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+      - .env.qa
+    depends_on:
+      db_qa:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  app_prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+      - .env.prod
+    depends_on:
+      db_prod:
+        condition: service_healthy
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+
+volumes:
+  db_qa_data:
+  db_prod_data:
