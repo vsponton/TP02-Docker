@@ -74,23 +74,7 @@ docker compose ps
 # database -> healthy (MySQL 8)
 
 ---
-
-## Problemas encontrados y soluciones
-
--Tags con mayúsculas → Docker exige minúsculas. Se renombró a 2146222/tp02-arqui-backend.
-
--Falta de base arqsoft1 → el backend la requiere. Se creó además de arqsoft1_qa/_prod.
-
--Sin /health público → se validó liveness usando 401 en /courses sin token.
-
--Token con claims inválidos (login devuelve id_user:0) → no se usó para flujos protegidos; solo se validó middleware con 401.
-
--DNS al ejecutar contenedores sueltos → correr todo con Compose (servicio database) o usar la red del proyecto.
-
-
-
-## Cómo reproducir
-
+CÓMO PROBAR
 # Requisito: Docker Desktop
 git clone https://github.com/vsponton/TP02-Docker.git
 cd TP02-Docker
@@ -104,4 +88,21 @@ curl -i http://localhost:3001/courses
 docker inspect $(docker compose ps -q app_qa)   --format '{{.Config.Image}}'
 docker inspect $(docker compose ps -q app_prod) --format '{{.Config.Image}}'
 docker compose exec database mysql -uroot -proot -e "USE arqsoft1; SELECT * FROM tp_check;" || true
+---
+
+## Problemas encontrados y soluciones
+
+-Tags con mayúsculas → Docker exige minúsculas. Se renombró a 2146222/tp02-arqui-backend.
+
+-Falta de base arqsoft1 → el backend la requiere. Se creó además de arqsoft1_qa/_prod.
+
+-Sin /health público → se validó liveness usando 401 en /courses sin token.
+
+-Token con claims inválidos (login devuelve id_user:0) → no se usó para flujos protegidos; solo se validó middleware con 401.
+
+-DNS al ejecutar contenedores sueltos → correr todo con Compose (servicio database) o usar la red del proyecto.
+
+---
+
+
 
