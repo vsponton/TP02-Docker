@@ -74,21 +74,6 @@ docker compose ps
 # database -> healthy (MySQL 8)
 
 ---
-CÓMO PROBAR
-# Requisito: Docker Desktop
-git clone https://github.com/vsponton/TP02-Docker.git
-cd TP02-Docker
-
-# Levantar todo
-docker compose up -d --pull always
-
-# Comprobaciones rápidas
-curl -i http://localhost:3000/courses
-curl -i http://localhost:3001/courses
-docker inspect $(docker compose ps -q app_qa)   --format '{{.Config.Image}}'
-docker inspect $(docker compose ps -q app_prod) --format '{{.Config.Image}}'
-docker compose exec database mysql -uroot -proot -e "USE arqsoft1; SELECT * FROM tp_check;" || true
----
 
 ## Problemas encontrados y soluciones
 
@@ -104,5 +89,22 @@ docker compose exec database mysql -uroot -proot -e "USE arqsoft1; SELECT * FROM
 
 ---
 
+## CÓMO PROBAR
+
+
+**Requisito: Docker Desktop**
+git clone https://github.com/vsponton/TP02-Docker.git
+cd TP02-Docker
+
+# Levantar todo
+docker compose up -d --pull always
+
+# Comprobaciones rápidas
+curl -i http://localhost:3000/courses
+curl -i http://localhost:3001/courses
+docker inspect $(docker compose ps -q app_qa)   --format '{{.Config.Image}}'
+docker inspect $(docker compose ps -q app_prod) --format '{{.Config.Image}}'
+docker compose exec database mysql -uroot -proot -e "USE arqsoft1; SELECT * FROM tp_check;" || true
+---
 
 
