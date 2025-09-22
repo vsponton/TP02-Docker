@@ -75,7 +75,7 @@ docker compose ps
 
 ---
 
-***Problemas encontrados y soluciones***
+## Problemas encontrados y soluciones
 
 -Tags con mayúsculas → Docker exige minúsculas. Se renombró a 2146222/tp02-arqui-backend.
 
@@ -87,9 +87,9 @@ docker compose ps
 
 -DNS al ejecutar contenedores sueltos → correr todo con Compose (servicio database) o usar la red del proyecto.
 
----
 
-Cómo reproducir
+
+## Cómo reproducir
 
 # Requisito: Docker Desktop
 git clone https://github.com/vsponton/TP02-Docker.git
