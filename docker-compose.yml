@@ -1,64 +1,52 @@
 services:
-  db_qa:
-    image: postgres:16-alpine
+  database:
+    image: mysql:8.0
     environment:
-      POSTGRES_DB: appdb_qa
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5433:5432"          # opcional: para conectar con DBeaver/IDE
+      MYSQL_ROOT_PASSWORD: root
+      # crea una DB inicial; el resto las creamos con init.sql
+      MYSQL_DATABASE: arqsoft1_qa
+    command: ["--default-authentication-plugin=mysql_native_password"]
     volumes:
-      - db_qa_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
+      - ./arqui/database-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d appdb_qa"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot | grep 'mysqld is alive' || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 10
-
-  db_prod:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: appdb_prod
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+    # opcional: para IDE tipo DBeaver
     ports:
-      - "5434:5432"
-    volumes:
-      - db_prod_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d appdb_prod"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - "3307:3306"
 
   app_qa:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-      - .env.qa
+    image: 2146222/tp02-arqui-backend:v1.0  # MISMA IMAGEN que PROD
+    environment:
+      DB_HOST: database
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: arqsoft1_qa
     depends_on:
-      db_qa:
+      database:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3000:8080"
     restart: unless-stopped
 
   app_prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-      - .env.prod
+    image: 2146222/tp02-arqui-backend:v1.0  # MISMA IMAGEN que QA
+    environment:
+      DB_HOST: database
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: arqsoft1_prod
     depends_on:
-      db_prod:
+      database:
         condition: service_healthy
     ports:
-      - "3001:3000"
+      - "3001:8080"
     restart: unless-stopped
 
 volumes:
-  db_qa_data:
-  db_prod_data:
+  mysql_data:
